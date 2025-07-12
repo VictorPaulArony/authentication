@@ -24,7 +24,7 @@ print_success() {
 
 # Test Student Registration
 print_header "Testing Student Registration"
-curl -s -X POST "$BASE_URL/student/register" \
+curl -s -X POST "$BASE_URL/register/student" \
 -H "Content-Type: application/json" \
 -d '{
     "username": "student1",
@@ -33,7 +33,7 @@ curl -s -X POST "$BASE_URL/student/register" \
 
 # Test Student Login
 print_header "Testing Student Login"
-curl -s -X POST "$BASE_URL/student/login" \
+curl -s -X POST "$BASE_URL/login/student" \
 -H "Content-Type: application/json" \
 -d '{
     "username": "student1",
@@ -42,17 +42,19 @@ curl -s -X POST "$BASE_URL/student/login" \
 
 # Test Teacher Registration
 print_header "Testing Teacher Registration"
-curl -s -X POST "$BASE_URL/teacher/register" \
+curl -s -X POST "$BASE_URL/register/teacher" \
 -H "Content-Type: application/json" \
 -d '{
     "username": "teacher1",
     "password": "teacher123",
-    "email": "teacher1@school.edu"
+    "email": "teacher1@school.edu",
+    "phone": "123-456-7890"
+
 }'
 
 # Test Teacher Login
 print_header "Testing Teacher Login"
-curl -s -X POST "$BASE_URL/teacher/login" \
+curl -s -X POST "$BASE_URL/login/teacher" \
 -H "Content-Type: application/json" \
 -d '{
     "username": "teacher1",
@@ -61,7 +63,7 @@ curl -s -X POST "$BASE_URL/teacher/login" \
 
 # Test Invalid Login Attempt
 print_header "Testing Invalid Login Attempt"
-curl -s -X POST "$BASE_URL/student/login" \
+curl -s -X POST "$BASE_URL/login/student" \
 -H "Content-Type: application/json" \
 -d '{
     "username": "nonexistent",
@@ -70,7 +72,7 @@ curl -s -X POST "$BASE_URL/student/login" \
 
 # Test Duplicate Username Registration
 print_header "Testing Duplicate Username Registration"
-curl -s -X POST "$BASE_URL/student/register" \
+curl -s -X POST "$BASE_URL/register/student" \
 -H "Content-Type: application/json" \
 -d '{
     "username": "student1",
