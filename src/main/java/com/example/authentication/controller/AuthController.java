@@ -24,7 +24,7 @@ public class AuthController {
     private TeacherService teacherService;
 
     // Student endpoints
-    @PostMapping("/student/register")
+    @PostMapping("/register/student")
     public ResponseEntity<String> registerStudent(@RequestBody RegisterRequest request) {
         try {
             String message = studentService.register(request);
@@ -34,7 +34,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/student/login")
+    @PostMapping("/login/student")
     public ResponseEntity<String> loginStudent(@RequestBody RegisterRequest request) {
         try {
             String message = studentService.login(request);
@@ -45,7 +45,7 @@ public class AuthController {
     }
     
     // Teacher endpoints
-    @PostMapping("/teacher/register")
+    @PostMapping("/register/teacher")
     public ResponseEntity<String> registerTeacher(@RequestBody TeacherRegisterRequest request) {
         try {
             String message = teacherService.register(request);
@@ -55,7 +55,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/teacher/login")
+    @PostMapping("/login/teacher")
     public ResponseEntity<String> loginTeacher(@RequestBody TeacherRegisterRequest request) {
         try {
             String message = teacherService.login(request);
