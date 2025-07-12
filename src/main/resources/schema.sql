@@ -115,106 +115,68 @@ CREATE TABLE IF NOT EXISTS course_session (
     course_outline_id BIGINT NOT NULL, -- ID of the course outline this session belongs to
     session_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     duration INT NOT NULL, -- Duration in minutes
-    status ENUM('COMPLETED', 'IN_PROGRESS', 'NOT_STARTED') DEFAULT 'NOT_STARTED', -- Status of the session
+    status ENUM('COMPLETED', 'IN_PROGRESS', 'NOT_STARTED', 'REVIEWED') DEFAULT 'NOT_STARTED', -- Status of the session
     FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE,
     FOREIGN KEY (course_outline_id) REFERENCES course_outline(id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
 
--- CREATE TABLE IF NOT EXISTS course_progress (
---     id BIGINT PRIMARY KEY AUTO_INCREMENT,
---     student_id BIGINT NOT NULL,
---     course_id BIGINT NOT NULL,
---     outline_id BIGINT NOT NULL,
---     progress INT DEFAULT 0 CHECK (progress >= 0 AND progress <= 100),
---     FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE,
---     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
---     FOREIGN KEY (outline_id) REFERENCES course_outline(id) ON DELETE CASCADE
--- );
-
-CREATE TABLE IF NOT EXISTS assignment (
+CREATE TABLE IF NOT EXISTS course_progress (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    course_id BIGINT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    content_type ENUM('PDF', 'VIDEO', 'TEXT', 'QUIZ') NOT NULL, -- Type of content (PDF, Video, Text, Quiz)
-    content_url VARCHAR(255), 
-    duration INT NOT NULL, 
-    points INT NOT NULL, 
-    created_by BIGINT NOT NULL, 
-    due_date TIMESTAMP NOT NULL,
-    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+    student_id BIGINT NOT NULL,
+    outline_id BIGINT NOT NULL,
+    progress INT DEFAULT 0 CHECK (progress >= 0 AND progress <= 3),
+    -- Progress can be 0 (Not Started), 1 (In Progress), 2 (Completed), 3 (Reviewed)
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (student_id, outline_id), -- Ensure a student can only have one progress entry per outline
+    FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE,
+    FOREIGN KEY (outline_id) REFERENCES course_outline(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS assignment_submission (
+CREATE TABLE IF NOT EXISTS assesment (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    assignment_id BIGINT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT, 
+    content_type ENUM('LIVE', 'MULTIPLE_CHOICE', 'SHORT_ANSWER', 'ESSAY') NOT NULL, -- Type of assessment
+    assesment_type ENUM('CAT', 'RAT', 'ASSIGNMENT', 'EXAM') NOT NULL, -- Type of assessment 
+    content_url VARCHAR(255), 
+    duration INT NOT NULL, -- Duration in minutes
+    points INT NOT NULL, -- Total points for the quiz
+    course_id BIGINT NOT NULL,
+    due_date TIMESTAMP NOT NULL,
+    created_by BIGINT NOT NULL, -- ID of the teacher who created the quiz
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    FOREIGN KEY (created_by) REFERENCES teacher(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE IF NOT EXISTS assesment_submission (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    assesment_id BIGINT NOT NULL,
     student_id BIGINT NOT NULL,
     submission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     content TEXT, -- Content of the submission
     grade INT, -- Grade given by the teacher
     feedback TEXT, -- Feedback from the teacher
-    UNIQUE (assignment_id, student_id), -- Ensure a student can only submit once per assignment
-    FOREIGN KEY (assignment_id) REFERENCES assignment(id) ON DELETE CASCADE,
+    UNIQUE (assesment_id, student_id), -- Ensure a student can only submit once per assignment
+    FOREIGN KEY (assesment_id) REFERENCES assesment(id) ON DELETE CASCADE,
     FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS quiz (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    session_type ENUM('LIVE', 'RECORDED', 'PDF') NOT NULL,
-    content_type ENUM('PDF', 'VIDEO', 'TEXT', 'QUIZ') NOT NULL, -- Type of content (PDF, Video, Text, Quiz)
-    content_url VARCHAR(255), -- URL for the content (e.g., video, PDF)
-
-    content_url VARCHAR(255),
-    duration INT NOT NULL, -- Duration in minutes
-    points INT NOT NULL, -- Total points for the quiz
-    
-    course_id BIGINT NOT NULL,
-    due_date TIMESTAMP NOT NULL,
-    created_by BIGINT NOT NULL, -- ID of the teacher who created the quiz
-    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS quiz_question (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    quiz_id BIGINT NOT NULL,
-    question_text TEXT NOT NULL,
-    question_type ENUM('MULTIPLE_CHOICE', 'TRUE_FALSE', 'SHORT_ANSWER') NOT NULL,
-    FOREIGN KEY (quiz_id) REFERENCES quiz(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS quiz_option (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    question_id BIGINT NOT NULL,
-    option_text TEXT NOT NULL,
-    is_correct BOOLEAN DEFAULT FALSE, -- Indicates if this option is the correct answer
-    FOREIGN KEY (question_id) REFERENCES quiz_question(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS quiz_submission (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    quiz_id BIGINT NOT NULL,
-    student_id BIGINT NOT NULL,
-    content TEXT, -- Content of the submission (e.g., answers to questions)
-    submission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    score INT, -- Score obtained in the quiz
-    feedback TEXT, -- Feedback from the teacher
-    UNIQUE (quiz_id, student_id), -- Ensure a student can only submit once per quiz
-    FOREIGN KEY (quiz_id) REFERENCES quiz(id) ON DELETE CASCADE,
-    FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE
-);
 
 CREATE TABLE IF NOT EXISTS grades (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     student_id BIGINT NOT NULL,
     course_id BIGINT NOT NULL,
+    submission_id BIGINT NOT NULL, -- ID of the submission this grade is for
     grade INT CHECK (grade >= 0 AND grade <= 100), -- Grade between 0 and 100
+    submission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     feedback TEXT, -- Feedback from the teacher
     UNIQUE (student_id, course_id), -- Ensure a student can only have one grade per course
     FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE,
-    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    FOREIGN KEY (submission_id) REFERENCES assesment_submission(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS course_feedback (
