@@ -5,10 +5,13 @@ import com.example.authentication.model.Teacher;
 import com.example.authentication.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TeacherService {
+public class TeacherService implements UserDetailsService {
 
     @Autowired
     private TeacherRepository teacherRepository;
@@ -40,5 +43,11 @@ public class TeacherService {
         }
 
         return "Login successful for teacher: " + teacher.getUsername();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return teacherRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Teacher not found with username: " + username));
     }
 }
