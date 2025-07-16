@@ -95,6 +95,8 @@
             <scope>runtime</scope>
         </dependency>
 
+		<!-- For JWT token generation and validation -->
+
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId> jjwt </artifactId>
