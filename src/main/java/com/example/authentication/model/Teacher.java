@@ -5,49 +5,46 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Data
-public class Teacher {
+public class Teacher implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private String username;
     private String email;
     private String password;
-    // private String subject;
+    private String subject;
 
-    // Getters and setters
-    public Long getId() {
-        return id;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList();
     }
-    public void setId(Long id) {
-        this.id = id;
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
-    public String getUsername() {
-        return username;
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
-    public void setUsername(String username) {
-        this.username = username;
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
-    public String getPassword() {
-        return password;
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    // public String getSubject() {
-    //     return subject;
-    // }
-    // public void setSubject(String subject) {
-    //     this.subject = subject;
-    // }
-    
 }
