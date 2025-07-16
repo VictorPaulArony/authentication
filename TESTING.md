@@ -95,29 +95,42 @@ These tests verify the integration between controllers, services, and repositori
 #### Student Registration
 ```bash
 curl -X POST http://localhost:8080/api/auth/register/student \
-  -H "Content-Type: application/json" \
-  -d '{"username":"test_student","password":"test123"}'
+-H "Content-Type: application/json" \
+-d '{
+  "username": "teststudent",
+  "password": "password"
+}'
 ```
 
 #### Student Login
 ```bash
 curl -X POST http://localhost:8080/api/auth/login/student \
-  -H "Content-Type: application/json" \
-  -d '{"username":"test_student","password":"test123"}'
+-H "Content-Type: application/json" \
+-d '{
+  "username": "teststudent",
+  "password": "password"
+}'
 ```
 
 #### Teacher Registration
 ```bash
 curl -X POST http://localhost:8080/api/auth/register/teacher \
-  -H "Content-Type: application/json" \
-  -d '{"username":"test_teacher","password":"teach123","email":"teacher@test.com"}'
+-H "Content-Type: application/json" \
+-d '{
+  "username": "testteacher",
+  "password": "password",
+  "email": "teacher@example.com"
+}'
 ```
 
 #### Teacher Login
 ```bash
 curl -X POST http://localhost:8080/api/auth/login/teacher \
-  -H "Content-Type: application/json" \
-  -d '{"username":"test_teacher","password":"teach123"}'
+-H "Content-Type: application/json" \
+-d '{
+  "username": "testteacher",
+  "password": "password"
+}'
 ```
 
 ### Using test.sh Script
