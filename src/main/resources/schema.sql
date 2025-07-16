@@ -1,29 +1,30 @@
 CREATE TABLE IF NOT EXISTS student (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    firstname VARCHAR(255) NOT NULL,
-    lastname VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    phone VARCHAR(20) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL, 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    username VARCHAR(255) NOT NULL,
+    -- lastname VARCHAR(255) NOT NULL,
+    -- email VARCHAR(255) NOT NULL UNIQUE,
+    -- phone VARCHAR(20) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+    -- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 --the NOT NULL constraint are for registraition form fields
 --the other constrains can be used in the settings of the profile page
 CREATE TABLE IF NOT EXISTS teacher (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    firstname VARCHAR(255) NOT NULL,
-    lastname VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    -- firstname VARCHAR(255) NOT NULL,
+    -- lastname VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    phone VARCHAR(20) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    professional_level VARCHAR(255), -- Education details of the teacher
-    certification VARCHAR(255), -- Certifications held by the teacher
-    profile_picture VARCHAR(255), -- URL to the teacher's profile picture
-    bio TEXT, -- Short biography of the teacher
-    year_of_experience INT, -- Years of experience in teaching
-    course VARCHAR(255),
-    language VARCHAR(50), -- Language the teacher is proficient in
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -- phone VARCHAR(20) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+    -- professional_level VARCHAR(255), -- Education details of the teacher
+    -- certification VARCHAR(255), -- Certifications held by the teacher
+    -- profile_picture VARCHAR(255), -- URL to the teacher's profile picture
+    -- bio TEXT, -- Short biography of the teacher
+    -- year_of_experience INT, -- Years of experience in teaching
+    -- course VARCHAR(255),
+    -- language VARCHAR(50), -- Language the teacher is proficient in
+    -- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS institution (
