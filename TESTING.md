@@ -132,6 +132,46 @@ curl -X POST http://localhost:8080/api/auth/login/teacher \
   "password": "password"
 }'
 ```
+### Instruction registration
+```bash
+curl -X POST http://localhost:8080/api/auth/register/institution \
+  -H "Content-Type: application/json" \
+  -d '{
+    "schoolnamne": "zone01kisumu High",
+    "registraitionNumber": "Z01-12345",
+    "schoolType": "SECONDARY",
+    "educationSystem": "CBC",
+    "location": "123 Koinage Street, Kisumu",
+    "email": "admin@zone01kisumu.edu",
+    "phone": "+254768744700",
+    "password": "SecurePass123"
+  }'
+```
+json response
+```json
+{
+  "message": "Registration successful",
+  "status": 200
+}
+```
+
+### Institution Login
+```bash
+curl -X POST http://localhost:8080/api/auth/login/institution \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@zone01kisumu.edu",
+    "password": "SecurePass123"
+  }'
+```
+json response
+```json
+{
+  "user": "admin@zone01kisumu.edu",
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkB6b25lMDFraXN1bXUuZWR1IiwiaWF0IjoxNzUzMTM4Mzk4LCJleHAiOjE3NTMyMjQ3OTh9.HiqNT7UY6hRfd_xzvIgh5ScrK5zbtcXJOUTdZmqGzQY"
+}
+
+```
 
 ### Using test.sh Script
 1. Make the script executable:
