@@ -5,9 +5,13 @@ import com.example.authentication.dto.InstitutionLoginDTO;
 import com.example.authentication.dto.InstitutionRegistrationDTO;
 import com.example.authentication.model.Institution;
 import com.example.authentication.service.InstitutionService;
+import com.example.authentication.service.RateLimiterService;
+
+import io.github.bucket4j.Bucket;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,22 +23,38 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.time.Duration;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class InstitutionController {
 
-    @Autowired
     private final AuthenticationManager authenticationManager;
 
-    @Autowired
     private final InstitutionService institutionService;
 
-    @Autowired
+    private final RateLimiterService rateLimiterService;
+
     private final JwtUtil jwtUtil;
 
+    private String generateKey(HttpServletRequest request, String endpointName) {
+        String ip = request.getRemoteAddr();
+        return ip + ":" + endpointName;
+    }
+
     @PostMapping("/register/institution")
-    public ResponseEntity<?> registerInstitution(@Valid @RequestBody InstitutionRegistrationDTO registrationDTO) {
+    public ResponseEntity<?> registerInstitution(HttpServletRequest request,
+            @Valid @RequestBody InstitutionRegistrationDTO registrationDTO) {
+        String key = generateKey(request, "/api/auth");
+        Bucket bucket = rateLimiterService.resolveBucket(key, 5, Duration.ofMinutes(10));
+
+        if (!bucket.tryConsume(1)) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Too many registration attempts. Please try again later.");
+            return ResponseEntity.status(429).body(error);
+        }
+
         try {
             Institution savedInstitution = institutionService.register(registrationDTO);
 
@@ -51,11 +71,20 @@ public class InstitutionController {
     }
 
     @PostMapping("/login/institution")
-    public ResponseEntity<?> loginInstitution(@Valid @RequestBody InstitutionLoginDTO loginDTO) {
+    public ResponseEntity<?> loginInstitution(HttpServletRequest request,
+            @Valid @RequestBody InstitutionLoginDTO loginDTO) {
+        String key = generateKey(request, "login-institution");
+        Bucket bucket = rateLimiterService.resolveBucket(key, 5, Duration.ofMinutes(5)); // Customize as needed
+
+        if (!bucket.tryConsume(1)) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Too many login attempts. Please try again later.");
+            return ResponseEntity.status(429).body(error);
+        }
+
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword())
-            );
+                    new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
 
             UserDetails userDetails = institutionService.loadUserByUsername(loginDTO.getEmail());
             String token = jwtUtil.generateToken(userDetails);
@@ -63,7 +92,6 @@ public class InstitutionController {
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("user", loginDTO.getEmail());
-
 
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
