@@ -279,5 +279,74 @@ json response
 - [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)
 - [REST API Testing Best Practices](https://smartbear.com/learn/automated-testing/api-testing/)
 
+
+
+### Test Rate Limiting: Send Multiple Requests
+
+Use a loop to simulate 6 registration attempts (to exceed the 5-request limit):
+
+```bash
+for i in {1..6}; do
+  echo "Request $i:"
+curl -X POST http://localhost:8080/api/auth/register/institution \
+  -H "Content-Type: application/json" \
+  -d '{
+    "schoolnamne": "zone01kisumu High",
+    "registraitionNumber": "Z01-12345",
+    "schoolType": "SECONDARY",
+    "educationSystem": "CBC",
+    "location": "123 Kondele Street, Kisumu",
+    "email": "admin'$i'@zone01kisumu.edu",
+    "phone": "+25476874470'$i'",
+    "password": "SecurePass123"
+  }'
+   echo 
+done
+```
+### What You'll See:
+
+First 5 requests: should return 200 OK (assuming no other issues)
+```sh
+Request 1:
+{"institution":"admin1@zone01kisumu.edu","message":"Institution registered successfully"}
+Request 2:
+{"error":"Too many registration attempts. Please try again later."}
+Request 3:
+{"error":"Too many registration attempts. Please try again later."}
+Request 4:
+{"error":"Too many registration attempts. Please try again later."}
+Request 5:
+{"error":"Too many registration attempts. Please try again later."}
+```
+
+6th request: should return 429 Too Many Requests with:
+
+```bash
+Request 6:
+{
+  "error": "Too many registration attempts. Please try again later."
+}
+```
+### Explanation:
+The entire bucket (5 tokens) is refilled every 10 minutes.
+
+If the user hits 5 attempts quickly (e.g. in 1 minute), they'll have to wait 9 more minutes before the bucket is full again.
+
+After 10 minutes from the first attempt, the bucket is reset with all 5 tokens.
+
+### Login Loop (6 Requests)
+testing login rate limiting (e.g., 5 attempts allowed, 6th blocked) 
+```sh
+for i in {1..6}; do
+  echo "Login Attempt $i:"
+  curl -s -w "\nStatus: %{http_code}\n" -X POST http://localhost:8080/api/auth/login/institution \
+    -H "Content-Type: application/json" \
+    -d '{
+      "email": "admin1@zone01kisumu.edu",
+      "password": "SecurePass123"
+    }'
+  echo 
+done
+```
 ## Support
 For any testing-related issues, please contact the development team.
