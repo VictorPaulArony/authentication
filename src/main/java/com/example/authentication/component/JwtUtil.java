@@ -3,7 +3,7 @@ package com.example.authentication.component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -13,17 +13,18 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
-    @Value("${jwt.secret:mySecretKey}")
+    @Value("${secretKey}")
     private String secret;
     
-    @Value("${jwt.expiration:86400000}") // 24 hours in milliseconds
+    @Value("${expiration}") // 24 hours in milliseconds
     private Long expiration;
     
-    @Autowired
-    private StudentService studentService;
+    private final StudentService studentService;
     
     // Generate token for user
     public String generateToken(UserDetails userDetails) {
