@@ -3,7 +3,6 @@ package com.example.authentication.controller;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
 
 import com.example.authentication.component.JwtUtil;
 import com.example.authentication.dto.RegisterRequest;
@@ -24,18 +24,16 @@ import com.example.authentication.service.TeacherService;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
-    @Autowired
-    private AuthenticationManager authenticationManager;
+
+    private final AuthenticationManager authenticationManager;
     
-    @Autowired
-    private StudentService studentService;
+    private final StudentService studentService;
     
-    @Autowired
-    private TeacherService teacherService;
+    private final TeacherService teacherService;
     
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
     
     // Student endpoints
     @PostMapping("/register/student")
