@@ -41,6 +41,8 @@ public class InstitutionController {
 
     private final JwtUtil jwtUtil;
 
+    private static final String ERROR_MESSAGE = "error";
+
     private String generateKey(HttpServletRequest request, String endpointName) {
         String ip = request.getRemoteAddr();
         return ip + ":" + endpointName;
@@ -54,7 +56,7 @@ public class InstitutionController {
 
         if (!bucket.tryConsume(1)) {
             Map<String, String> error = new HashMap<>();
-            error.put("error", "Too many registration attempts. Please try again later.");
+            error.put(ERROR_MESSAGE, "Too many registration attempts. Please try again later.");
             return ResponseEntity.status(429).body(error);
         }
 
@@ -68,7 +70,7 @@ public class InstitutionController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
-            error.put("error ", "Institution registration failed: " + e.getMessage());
+            error.put(ERROR_MESSAGE, "Institution registration failed: " + e.getMessage());
             return ResponseEntity.badRequest().body(error);
         }
     }
@@ -81,7 +83,7 @@ public class InstitutionController {
 
         if (!bucket.tryConsume(1)) {
             Map<String, String> error = new HashMap<>();
-            error.put("error", "Too many login attempts. Please try again later.");
+            error.put(ERROR_MESSAGE, "Too many login attempts. Please try again later.");
             return ResponseEntity.status(429).body(error);
         }
 
@@ -99,13 +101,13 @@ public class InstitutionController {
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             Map<String, String> error = new HashMap<>();
-            error.put("error", "Invalid credentials");
+            error.put(ERROR_MESSAGE, "Invalid credentials");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
-        return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        return ResponseEntity.badRequest().body(ERROR_MESSAGE + e.getMessage());
     }
 }
