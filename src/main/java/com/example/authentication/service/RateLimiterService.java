@@ -6,7 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
 
-import io.github.bucket4j.*;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
 
 //service to apply rate limiting using Bucket4j.
 @Service
@@ -27,8 +28,8 @@ public class RateLimiterService {
      */
     private Bucket newBucket(int capacity, Duration refillDuration) {
         Bandwidth limit = Bandwidth.builder()
-                .capacity(capacity)                        
-                .refillIntervally(capacity, refillDuration) 
+                .capacity(capacity)
+                .refillIntervally(capacity, refillDuration)
                 .build();
 
         return Bucket.builder()
