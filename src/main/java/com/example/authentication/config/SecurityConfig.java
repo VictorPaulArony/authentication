@@ -6,7 +6,6 @@ import com.example.authentication.service.InstitutionService;
 import com.example.authentication.service.StudentService;
 import com.example.authentication.service.TeacherService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,28 +17,24 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private StudentService studentService;
+    private final StudentService studentService;
 
-    @Autowired
-    private TeacherService teacherService;
+    private final TeacherService teacherService;
 
-    @Autowired
-    private InstitutionService institutionService;
+    private final InstitutionService institutionService;
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
@@ -52,7 +47,6 @@ public class SecurityConfig {
         return authBuilder.build();
     }
 
-    @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
     }
