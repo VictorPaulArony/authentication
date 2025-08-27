@@ -1,23 +1,24 @@
 package com.example.authentication.service;
 
-import com.example.authentication.dto.TeacherRegisterRequest;
-import com.example.authentication.model.Teacher;
-import com.example.authentication.repository.TeacherRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.authentication.dto.TeacherRegisterRequest;
+import com.example.authentication.model.Teacher;
+import com.example.authentication.repository.TeacherRepository;
+
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class TeacherService implements UserDetailsService {
 
-    @Autowired
-    private TeacherRepository teacherRepository;
+    private final TeacherRepository teacherRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public String register(TeacherRegisterRequest request) {
         if (teacherRepository.existsByUsername(request.getUsername())) {
@@ -28,7 +29,7 @@ public class TeacherService implements UserDetailsService {
         teacher.setUsername(request.getUsername());
         teacher.setPassword(passwordEncoder.encode(request.getPassword()));
         teacher.setEmail(request.getEmail());
-        // teacher.setSubject(request.getSubject());
+        teacher.setSubject(request.getSubject());
 
         teacherRepository.save(teacher);
         return "Teacher registration successful for: " + request.getUsername();
