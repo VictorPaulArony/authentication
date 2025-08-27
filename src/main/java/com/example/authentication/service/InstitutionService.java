@@ -1,6 +1,11 @@
 package com.example.authentication.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.example.authentication.dto.InstitutionLoginDTO;
 import com.example.authentication.dto.InstitutionRegistrationDTO;
@@ -10,20 +15,14 @@ import com.example.authentication.repository.InstitutionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.core.userdetails.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 
 @Service
 @RequiredArgsConstructor
 public class InstitutionService implements UserDetailsService {
 
-    @Autowired
-    private InstitutionRepository institutionRepository;
+    private final InstitutionRepository institutionRepository;
 
-    @Autowired
-    private  PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Institution register(InstitutionRegistrationDTO dto) {
