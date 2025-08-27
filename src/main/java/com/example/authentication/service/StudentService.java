@@ -1,23 +1,26 @@
 package com.example.authentication.service;
 
-import com.example.authentication.dto.RegisterRequest;
-import com.example.authentication.model.Student;
-import com.example.authentication.repository.StudentRepository;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.example.authentication.dto.RegisterRequest;
+import com.example.authentication.model.Student;
+import com.example.authentication.repository.StudentRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class StudentService implements UserDetailsService {
-    @Autowired
-    private StudentRepository studentRepository;
+
+    private final StudentRepository studentRepository;
     
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     
     // Method to register a new student
     public String register(RegisterRequest request) {
