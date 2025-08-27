@@ -1,9 +1,12 @@
 package com.example.authentication.dto;
 
-// import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.*;
-// import jakarta.validation.constraints.Size;
-import lombok.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -36,7 +39,6 @@ public class InstitutionRegistrationDTO {
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
-    
+
     // You can add more fields as needed for registration, e.g. principal info, etc.
 }
-
