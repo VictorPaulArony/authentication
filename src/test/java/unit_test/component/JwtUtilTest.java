@@ -10,9 +10,6 @@ import org.mockito.Mockito;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Date;
-import java.util.HashMap;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -72,4 +69,4 @@ class JwtUtilTest {
         return 1000L * 60 * 60 * 24;
     }
 }
-}
+
